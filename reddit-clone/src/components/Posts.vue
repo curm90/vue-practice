@@ -19,6 +19,17 @@
             <span class="badge badge-pill badge-secondary"
               >{{ post.data.num_comments }} Comments</span
             >
+            <button
+              v-if="isImage(post)"
+              @click="post.showImage = !post.showImage"
+              type="button"
+              class="btn btn-primary"
+            >
+              {{ post.showImage ? 'Hide' : 'Show' }} Image
+            </button>
+            <div class="image__container" v-if="post.showImage">
+              <img :src="post.data.url" alt="" />
+            </div>
           </div>
         </div>
       </li>
@@ -45,6 +56,9 @@ export default {
       fetch(url)
         .then(response => response.json())
         .then(result => {
+          result.data.children.forEach(child => {
+            child.showImage = false;
+          });
           this.posts = result.data.children;
         });
     },
@@ -56,9 +70,20 @@ export default {
     createUrl(path) {
       return `https://www.reddit.com${path}`;
     },
+    isImage(post) {
+      return post.data.url.match(/.(jpg|png|jpeg|bpm)$/);
+    },
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.image__container {
+  max-width: 30rem;
+}
+
+.image__container > img {
+  width: 100%;
+}
+</style>
